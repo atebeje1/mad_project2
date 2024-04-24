@@ -100,7 +100,13 @@ class _UserPostPageState extends State<UserPostPage> {
             ),
             SizedBox(height: 8.0),
             if (post.imageUrl != null) ...[
-              Image.network(post.imageUrl!), // Display image if imageUrl is not null
+              AspectRatio(
+                aspectRatio: 1.0, // Set aspect ratio to 1:1 for a square image
+                child: Image.network(
+                  post.imageUrl!,
+                  fit: BoxFit.cover, // Ensure the image covers the entire widget
+                ),
+              ),
               SizedBox(height: 8.0),
             ],
             Text(post.text),
@@ -271,7 +277,6 @@ class _UserPostPageState extends State<UserPostPage> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-
 
     if (pickedImage != null) {
       setState(() {
