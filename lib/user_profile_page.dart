@@ -13,6 +13,10 @@ class UserProfilePage extends StatelessWidget {
     final String userName = _extractUserName(user.email!); // Extracting username
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('User Profile'),
+        automaticallyImplyLeading: false,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -40,3 +44,4 @@ class UserProfilePage extends StatelessWidget {
     );
   }
 }
+

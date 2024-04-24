@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // Add this import
 import 'post_model.dart';
 
 class UserPostPage extends StatefulWidget {
@@ -12,21 +16,36 @@ class UserPostPage extends StatefulWidget {
 class _UserPostPageState extends State<UserPostPage> {
   final TextEditingController _postController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
+  File? _imageFile; // Variable to store the selected image file
 
   void _post() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     final postText = _postController.text.trim();
 
-    if (postText.isNotEmpty) {
+    if (postText.isNotEmpty || _imageFile != null) {
+      final imageUrl = _imageFile != null ? await _uploadImage(_imageFile!) : null;
+
       await FirebaseFirestore.instance.collection('posts').add({
         'userId': currentUser?.uid,
         'userName': currentUser?.email?.split('@')[0], // Use username from email
         'text': postText,
+        'imageUrl': imageUrl, // Add imageUrl field to Firestore document
         'timestamp': Timestamp.now(),
       });
 
       _postController.clear();
+      setState(() {
+        _imageFile = null; // Clear selected image after posting
+      });
     }
+  }
+
+  Future<String?> _uploadImage(File imageFile) async {
+    final storageRef = FirebaseStorage.instance.ref().child('post_images').child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+    final uploadTask = storageRef.putFile(imageFile);
+    await uploadTask;
+    final downloadUrl = await storageRef.getDownloadURL();
+    return downloadUrl;
   }
 
   void _likePost(Post post) async {
@@ -81,7 +100,7 @@ class _UserPostPageState extends State<UserPostPage> {
             ),
             SizedBox(height: 8.0),
             if (post.imageUrl != null) ...[
-              Image.network(post.imageUrl!),
+              Image.network(post.imageUrl!), // Display image if imageUrl is not null
               SizedBox(height: 8.0),
             ],
             Text(post.text),
@@ -181,6 +200,7 @@ class _UserPostPageState extends State<UserPostPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('User Posts'),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -232,6 +252,11 @@ class _UserPostPageState extends State<UserPostPage> {
                 ),
                 SizedBox(width: 8.0),
                 IconButton(
+                  icon: Icon(Icons.image), // Add image icon button
+                  onPressed: _pickImage, // Call _pickImage() method when the button is pressed
+                ),
+                SizedBox(width: 8.0),
+                IconButton(
                   icon: Icon(Icons.send),
                   onPressed: _post,
                 ),
@@ -242,5 +267,16 @@ class _UserPostPageState extends State<UserPostPage> {
       ),
     );
   }
-}
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+
+    if (pickedImage != null) {
+      setState(() {
+        _imageFile = File(pickedImage.path); // Set the selected image file
+      });
+    }
+  }
+}

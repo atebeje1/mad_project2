@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'user_post_page.dart';
 import 'user_profile_page.dart';
+import 'chat_page.dart'; // Import the chat page
 
 class BottomTabBarScreen extends StatefulWidget {
   @override
@@ -13,13 +14,12 @@ class _BottomTabBarScreenState extends State<BottomTabBarScreen> {
   final List<Widget> _pages = [
     UserPostPage(),
     UserProfilePage(),
+    ChatPage(), // Add the chat page
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -36,6 +36,10 @@ class _BottomTabBarScreenState extends State<BottomTabBarScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'User Profile',
+          ),
+          BottomNavigationBarItem( // Add the chat icon
+            icon: Icon(Icons.chat),
+            label: 'Chat',
           ),
         ],
       ),
