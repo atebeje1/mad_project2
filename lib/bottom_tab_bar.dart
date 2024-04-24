@@ -19,7 +19,6 @@ class _BottomTabBarScreenState extends State<BottomTabBarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bottom Tab Bar'),
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(

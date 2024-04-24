@@ -17,7 +17,7 @@ class UserProfilePage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              user.displayName ?? 'User',
+              user.displayName?.isNotEmpty == true ? user.displayName! : 'User',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
@@ -34,3 +34,4 @@ class UserProfilePage extends StatelessWidget {
     );
   }
 }
+
