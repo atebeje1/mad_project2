@@ -2,37 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'bottom_tab_bar.dart'; // Import the bottom tab bar screen
 
-class AuthenticationScreen extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
   @override
-  _AuthenticationScreenState createState() => _AuthenticationScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _AuthenticationScreenState extends State<AuthenticationScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _signIn(BuildContext context) async {
+  Future<void> _signUp(BuildContext context) async {
     try {
-      final String username = _usernameController.text;
+      final String email = _emailController.text;
       final String password = _passwordController.text;
 
-      // Implement sign-in logic with username and password
-      // For example, using signInWithEmailAndPassword method
-
-      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: username, // Use email as username
+      // Implement sign-up logic with email and password
+      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
         password: password,
       );
 
-      // Navigate to bottom tab bar screen upon successful sign-in
+      // Navigate to bottom tab bar screen upon successful sign-up
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BottomTabBarScreen()),
       );
     } catch (e) {
-      // Handle sign-in errors
-      print('Error signing in: $e');
+      // Handle sign-up errors
+      print('Error signing up: $e');
     }
   }
 
@@ -40,7 +38,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Authentication'),
+        title: Text('Sign Up'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -48,8 +46,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username or Email'),
+              controller: _emailController,
+              decoration: InputDecoration(labelText: 'Email'),
             ),
             SizedBox(height: 10),
             TextField(
@@ -59,8 +57,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => _signIn(context),
-              child: Text('Sign In'),
+              onPressed: () => _signUp(context),
+              child: Text('Sign Up'),
             ),
           ],
         ),

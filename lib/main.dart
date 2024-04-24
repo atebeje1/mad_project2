@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // Import your Firebase options file
-import 'authentication_screen.dart'; // Import your authentication screen
+import 'firebase_options.dart';
+import 'landing_page.dart'; // Import the landing page
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: AuthenticationScreen(), // Show authentication screen initially
+      home: LandingPage(), // Show landing page initially
     );
   }
 }
