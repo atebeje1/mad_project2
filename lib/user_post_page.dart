@@ -18,7 +18,7 @@ class _UserPostPageState extends State<UserPostPage> {
     try {
       final User? user = _auth.currentUser;
       if (user != null) {
-        final userName = user.displayName ?? 'User';
+        final userName = user.email!.split('@')[0]; // Extracting username from email
         final text = _postController.text;
 
         await FirebaseFirestore.instance.collection('posts').add({
@@ -44,6 +44,74 @@ class _UserPostPageState extends State<UserPostPage> {
     setState(() {
       _imageUrl = imageUrl;
     });
+  }
+
+  Widget _buildPostItem(Post post) {
+    final TextEditingController _editController = TextEditingController();
+
+    void _editPost() async {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Edit Post'),
+            content: TextField(
+              controller: _editController,
+              decoration: InputDecoration(hintText: 'Edit your post'),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () async {
+                  await FirebaseFirestore.instance.collection('posts').doc(post.id).update({'text': _editController.text});
+                  Navigator.pop(context);
+                },
+                child: Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    return Card(
+      margin: EdgeInsets.all(8.0),
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(post.userName),
+                Text(DateFormat('EEE, MMM d, ' 'h:mm a').format(post.timestamp)),
+              ],
+            ),
+            SizedBox(height: 8.0),
+            if (post.imageUrl != null) ...[
+              Image.network(post.imageUrl!),
+              SizedBox(height: 8.0),
+            ],
+            Text(post.text),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: _editPost,
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    FirebaseFirestore.instance.collection('posts').doc(post.id).delete();
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -110,52 +178,6 @@ class _UserPostPageState extends State<UserPostPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPostItem(Post post) {
-    return Card(
-      margin: EdgeInsets.all(8.0),
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(post.userName),
-                Text(DateFormat('EEE, MMM d, ' 'h:mm a').format(post.timestamp)),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            if (post.imageUrl != null) ...[
-              Image.network(post.imageUrl!),
-              SizedBox(height: 8.0),
-            ],
-            Text(post.text),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    // Add edit post functionality here
-                    // You can navigate to a new screen or show a dialog for editing
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    // Delete post functionality
-                    FirebaseFirestore.instance.collection('posts').doc(post.id).delete();
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
