@@ -6,13 +6,18 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Welcome'),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              'SocialApp',
+              style: TextStyle(
+                fontSize: 36, // Set the font size to 36
+                fontWeight: FontWeight.bold, // Set font weight to bold
+              ),
+            ),
+            SizedBox(height: 50), // Add space between the title and buttons
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
